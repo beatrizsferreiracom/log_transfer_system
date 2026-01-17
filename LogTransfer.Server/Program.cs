@@ -1,8 +1,9 @@
-﻿using LogTransfer.Server.Network;
+﻿using LogTransfer.Core;
+using LogTransfer.Server.Network;
 using System.Net;
 using System.Net.Sockets;
 
-const int PORT = 5000;
+const int PORT = SocketProtocol.DefaultPort;
 
 TcpListener listener = new TcpListener(IPAddress.Any, PORT);
 listener.Start();
