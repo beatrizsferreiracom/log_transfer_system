@@ -7,7 +7,7 @@ namespace LogTransfer.Server.Network
 {
     public class LogSocketHandler
     {
-        private const int BATCH_SIZE = 50000;
+        private const int BATCH_SIZE = SocketProtocol.ServerBatchSize;
         private readonly LogParser _parser = new();
 
         public void HandleClient(TcpClient client)
