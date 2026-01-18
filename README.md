@@ -26,7 +26,7 @@ Arquivos principais:
 - `Program.cs`
 
 Execução:
-'''LogTransfer.Client <logPath> <serverIp> [serverPort]'''
+```LogTransfer.Client <logPath> <serverIp> [serverPort]```
 
 
 ---
