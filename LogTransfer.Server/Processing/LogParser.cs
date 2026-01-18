@@ -1,4 +1,5 @@
 ﻿using LogTransfer.Core;
+using System.Security.Cryptography;
 
 namespace LogTransfer.Server.Processing
 {
@@ -11,31 +12,54 @@ namespace LogTransfer.Server.Processing
             if (string.IsNullOrWhiteSpace(line))
                 return false;
 
-            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            int lenght = line.Length;
+            int index = 0;
 
-            if (parts.Length < 6)
+            int part1 = line.IndexOf(' ', index);
+            if (part1 < 0) return false;
+            index = part1;
+            index++;
+
+            int part2 = line.IndexOf(' ', index);
+            if (part2 < 0) return false;
+            index = part2;
+            index++;
+
+            string logDate = line.Substring(0, part2);
+
+            int part3 = line.IndexOf(' ', index);
+            if (part3 < 0) return false;
+
+            if(!int.TryParse(line.Substring(index, part3 - index), out int pid))
                 return false;
 
-            string logDate = $"{parts[0]} {parts[1]}";
+            index = part3;
+            index++;
 
-            if (!int.TryParse(parts[2], out int pid))
+            int part4 = line.IndexOf(' ', index);
+            if (part4 < 0) return false;
+
+            if (!int.TryParse(line.Substring(index, part4 - index), out int tid))
                 return false;
 
-            if (!int.TryParse(parts[3], out int tid))
-                return false;
+            index = part4;
+            index++;
 
-            string level = parts[4];
+            int part5 = line.IndexOf(' ', index);
+            if (part5 < 0) return false;
 
-            string rest = string.Join(' ', parts.Skip(5));
+            string level = line.Substring(index, part5 - index);
 
-            int separator = rest.IndexOf(':');
-            if (separator == -1)
-                return false;
+            index = part5;
+            index++;
 
-            string component = rest.Substring(0, separator).Trim();
-            string content = rest.Substring(separator + 1).Trim();
+            int separator = line.IndexOf(':', index);
+            if (separator < 0) return false;
 
-            if (string.IsNullOrEmpty(component) || string.IsNullOrEmpty(content))
+            string component = line.Substring(index, separator - index).Trim();
+            string content = line.Substring(separator + 1).Trim();
+
+            if (component.Length == 0 || content.Length == 0)
                 return false;
 
             logEntry = new LogEntry

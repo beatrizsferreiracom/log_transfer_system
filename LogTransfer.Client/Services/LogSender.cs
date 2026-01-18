@@ -1,11 +1,5 @@
 ﻿using LogTransfer.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace LogTransfer.Client.Services
 {
     internal class LogSender

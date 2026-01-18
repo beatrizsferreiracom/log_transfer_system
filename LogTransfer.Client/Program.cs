@@ -17,10 +17,6 @@ class Program
             ? int.Parse(args[2])
             : SocketProtocol.DefaultPort;
 
-        Console.WriteLine("Starting log transfer...");
-        Console.WriteLine($"Path: {logPath}");
-        Console.WriteLine($"Server: {serverIp}:{serverPort}");
-
         var scanner = new FileScanner(logPath);
         var sender = new LogSender(serverIp, serverPort);
 

@@ -1,6 +1,7 @@
 ﻿using LogTransfer.Core;
 using LogTransfer.Server.Data;
 using LogTransfer.Server.Processing;
+using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace LogTransfer.Server.Network
@@ -13,6 +14,8 @@ namespace LogTransfer.Server.Network
         public void HandleClient(TcpClient client)
         {
             var logEntries = new List<LogEntry>(BATCH_SIZE);
+
+            var stopwatch = Stopwatch.StartNew();
 
             try
             {
@@ -49,6 +52,12 @@ namespace LogTransfer.Server.Network
             }
             finally
             {
+                stopwatch.Stop();
+
+                double seconds = stopwatch.Elapsed.TotalSeconds;
+
+                Console.WriteLine("Client processing completed");
+                Console.WriteLine($"Total time           : {stopwatch.Elapsed}");
                 Console.WriteLine("Client disconnected.");
             }
         }
