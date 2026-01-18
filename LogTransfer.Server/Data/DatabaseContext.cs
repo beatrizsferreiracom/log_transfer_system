@@ -4,7 +4,7 @@ namespace LogTransfer.Server.Data
 {
     public class DatabaseContext
     {
-        private readonly string _connectionString = "Server=NTB-2KV14W2;Database=TRANSFER_DB;Trusted_Connection=True;";
+        private readonly string _connectionString = @"Server=NTB-2KV14W2\SQLEXPRESS;Database=TRANSFER_DB;Trusted_Connection=True;TrustServerCertificate=True;";
 
         public SqlConnection CreateConnection()
         {

@@ -17,6 +17,13 @@ namespace LogTransfer.Server.Data
                 DestinationTableName = "AndroidLogs"
             };
 
+            bulkCopy.ColumnMappings.Add("LogDate", "LogDate");
+            bulkCopy.ColumnMappings.Add("Pid", "Pid");
+            bulkCopy.ColumnMappings.Add("Tid", "Tid");
+            bulkCopy.ColumnMappings.Add("Level", "Level");
+            bulkCopy.ColumnMappings.Add("Component", "Component");
+            bulkCopy.ColumnMappings.Add("Content", "Content");
+
             DataTable table = new DataTable();
             table.Columns.Add("LogDate", typeof(string));
             table.Columns.Add("Pid", typeof(int));
