@@ -1,12 +1,11 @@
 ﻿using LogTransfer.Core;
 using LogTransfer.Server.Data;
-using LogTransfer.Server.Processing;
 using System.Diagnostics;
 using System.Net.Sockets;
 
-namespace LogTransfer.Server.Network
+namespace LogTransfer.Server.Processing
 {
-    public class LogSocketHandler
+    public class LogProcessor
     {
         private const int BATCH_SIZE = SocketProtocol.ServerBatchSize;
         private readonly LogParser _parser = new();
@@ -20,9 +19,10 @@ namespace LogTransfer.Server.Network
             try
             {
                 using (client)
-                using (NetworkStream networkStream = client.GetStream())
-                using (StreamReader reader = new StreamReader(networkStream))
                 {
+                    NetworkStream networkStream = client.GetStream();
+                    StreamReader reader = new StreamReader(networkStream);
+                       
                     string? line;
 
                     while ((line = reader.ReadLine()) != null)
@@ -34,14 +34,14 @@ namespace LogTransfer.Server.Network
 
                         if (logEntries.Count >= BATCH_SIZE)
                         {
-                            LogRepository.BulkInsert(logEntries);
+                            LogBulk.BulkInsert(logEntries);
                             logEntries.Clear();
                         }
                     }
 
                     if (logEntries.Count > 0)
                     {
-                        LogRepository.BulkInsert(logEntries);
+                        LogBulk.BulkInsert(logEntries);
                         logEntries.Clear();
                     }
                 }

@@ -1,4 +1,4 @@
-﻿using LogTransfer.Client.Services;
+﻿using LogTransfer.Client;
 using LogTransfer.Core;
 
 class Program
@@ -17,10 +17,13 @@ class Program
             ? int.Parse(args[2])
             : SocketProtocol.DefaultPort;
 
-        var scanner = new FileScanner(logPath);
-        var sender = new LogSender(serverIp, serverPort);
+        var transfer = new LogTransferer(
+            logPath,
+            "*.log",
+            serverIp,
+            serverPort);
 
-        await sender.SendAsync(scanner.ReadLinesAsync());
+        await transfer.ExecuteAsync();
 
         Console.WriteLine("Log transfer completed.");
     }

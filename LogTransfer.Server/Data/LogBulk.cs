@@ -4,7 +4,7 @@ using Microsoft.Data.SqlClient;
 
 namespace LogTransfer.Server.Data
 {
-    public static class LogRepository
+    public static class LogBulk
     {
         private static readonly DatabaseContext _dbContext = new();
 
