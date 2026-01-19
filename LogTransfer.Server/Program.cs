@@ -1,5 +1,5 @@
 ﻿using LogTransfer.Core;
-using LogTransfer.Server.Network;
+using LogTransfer.Server.Processing;
 using System.Net;
 using System.Net.Sockets;
 
@@ -17,7 +17,7 @@ while (true)
 
     _ = Task.Run(() =>
     {
-        var protocol = new LogSocketHandler();
+        var protocol = new LogProcessor();
         protocol.HandleClient(client);
     });
 }
