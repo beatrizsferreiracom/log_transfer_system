@@ -10,11 +10,7 @@ namespace LogTransfer.Client
         private readonly string _serverIp;
         private readonly int _serverPort;
 
-        public LogTransferer(
-            string filePath,
-            string filePattern, 
-            string serverIp, 
-            int serverPort)
+        public LogTransferer(string filePath, string filePattern, string serverIp, int serverPort)
         {
             _filePath = filePath;
             _filePattern = filePattern;
@@ -36,15 +32,15 @@ namespace LogTransfer.Client
             using NetworkStream networkStream = client.GetStream();
             using var writer = new StreamWriter(
                 networkStream,
-                SocketProtocol.Encoding);
+                SocketProtocol.Encoding,
+                bufferSize: 1024 * 64);
 
-            string[] files = Directory.GetFiles(
+            foreach (var file in Directory.EnumerateFiles(
                 _filePath,
                 _filePattern,
-                SearchOption.AllDirectories);
-
-            foreach (var file in files)
+                SearchOption.AllDirectories))
             {
+
                 if (cancellationToken.IsCancellationRequested)
                 {
                     Console.WriteLine("Operation cancelled.");
@@ -57,7 +53,9 @@ namespace LogTransfer.Client
                     file,
                     FileMode.Open,
                     FileAccess.Read,
-                    FileShare.Read);
+                    FileShare.Read,
+                    bufferSize: 1024 * 64,
+                    useAsync: true);
 
                 using var reader = new StreamReader(stream);
 
@@ -72,9 +70,9 @@ namespace LogTransfer.Client
                     }
                     await writer.WriteLineAsync(line);
                 }
-
-                await writer.FlushAsync();
             }
+
+            await writer.FlushAsync();
         }
     }
 }

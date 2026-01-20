@@ -14,6 +14,7 @@ namespace LogTransfer.Server.Processing
         {
             var logEntries = new List<LogEntry>(BATCH_SIZE);
 
+            int totalInserted = 0;
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -31,6 +32,7 @@ namespace LogTransfer.Server.Processing
                             continue;
 
                         logEntries.Add(entry);
+                        totalInserted++;
 
                         if (logEntries.Count >= BATCH_SIZE)
                         {
@@ -58,6 +60,8 @@ namespace LogTransfer.Server.Processing
 
                 Console.WriteLine("Client processing completed");
                 Console.WriteLine($"Total time           : {stopwatch.Elapsed}");
+                Console.WriteLine($"Total lines inserted : {totalInserted}");
+
                 Console.WriteLine("Client disconnected.");
             }
         }
