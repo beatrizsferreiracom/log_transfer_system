@@ -1,93 +1,74 @@
-﻿using LogTransfer.Core;
-using System.Security.Cryptography;
+﻿using LogTransfer.Server.Data;
 
 namespace LogTransfer.Server.Processing
 {
     public class LogParser
     {
-        static int SkipSpaces(string s, int i)
+        public bool ValidateLine(ReadOnlySpan<char> line)
         {
-            while (i < s.Length && s[i] == ' ')
-                i++;
-            return i;
+            if (line.Length < 38)
+                return false;
+
+            return char.IsDigit(line[0]);
         }
 
-        public bool TryParse(string? line, out LogEntry logEntry)
+        public bool TryParse(ReadOnlySpan<char> line, out LogEntry entry)
         {
-            logEntry = null!;
+            entry = null!;
 
-            if (string.IsNullOrWhiteSpace(line))
+            if (!ValidateLine(line))
                 return false;
 
-            int index = 0;
-
-            int part1 = line.IndexOf(' ');
-            if (part1 < 0) return false;
-            index = SkipSpaces(line, part1 + 1);
-
-            int part2 = line.IndexOf(' ', index);
-            if (part2 < 0) return false;
-
-            string logDate = line.Substring(0, part2);
-
-            index = SkipSpaces(line, part2 + 1);
-
-            int part3 = line.IndexOf(' ', index);
-            if (part3 < 0) return false;
-
-            if (!int.TryParse(line.Substring(index, part3 - index), out int pid))
-                return false;
-
-            index = SkipSpaces(line, part3 + 1);
-
-            int part4 = line.IndexOf(' ', index);
-            if (part4 < 0) return false;
-
-            if (!int.TryParse(line.Substring(index, part4 - index), out int tid))
-                return false;
-
-            index = SkipSpaces(line, part4 + 1);
-
-            int part5 = line.IndexOf(' ', index);
-            if (part5 < 0) return false;
-
-            string level = line.Substring(index, part5 - index);
-
-            index = SkipSpaces(line, part5 + 1);
-
-            int separator = line.IndexOf(':', index);
-            
-            string component;
-            string content;
-
-            if (separator < 0)
+            try
             {
-                component = "Unknown";
-                content = line.Substring(index).Trim();
+                var logDate = line.Slice(0, 18);
+
+                var pidSpan = line.Slice(19, 5);
+                if (!int.TryParse(pidSpan, out int pid))
+                    return false;
+
+                var tidSpan = line.Slice(25, 5);
+                if (!int.TryParse(tidSpan, out int tid))
+                    return false;
+
+                var level = line.Slice(31, 1);
+
+                var content = line.Slice(33);
+
+                int separator = content.IndexOf(':');
+                if (separator < 0)
+                    separator = content.IndexOf('>');
+
+                ReadOnlySpan<char> component;
+                ReadOnlySpan<char> message;
+
+                if (separator < 0)
+                {
+                    component = "Unknown";
+                    message = content;
+                }
+                else
+                {
+                    component = content.Slice(0, separator).Trim();
+                    message = content.Slice(separator + 1).TrimStart();
+                }
+
+                entry = new LogEntry
+                {
+                    LogDate = logDate.ToString(),
+                    Pid = pid,
+                    Tid = tid,
+                    Level = level.ToString(),
+                    Component = component.Length == 0 ? "Unknown" : component.ToString(),
+                    Content = message.ToString()
+                };
+
+                return true;
             }
-            else
+            catch
             {
-                component = line.Substring(index, separator - index).Trim();
-                content = line.Substring(separator + 1).Trim();
+                return false;
             }
-
-            if (component.Length == 0)
-                component = "Unknown";
-
-            if (content.Length == 0)
-                content = string.Empty;
-
-            logEntry = new LogEntry
-            {
-                LogDate = logDate,
-                Pid = pid,
-                Tid = tid,
-                Level = level,
-                Component = component,
-                Content = content
-            };
-
-            return true;
         }
     }
 }

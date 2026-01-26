@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "LogTransfer.Client": {
-      "commandName": "Project",
-      "commandLineArgs": "C:\\dev\\local\\log_transfer_system\\Android_v2 127.0.0.1 5000"
-    }
-  }
-}

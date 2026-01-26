@@ -1,5 +1,4 @@
-﻿using LogTransfer.Core;
-using System.Data;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
 
 namespace LogTransfer.Server.Data
