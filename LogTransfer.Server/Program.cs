@@ -1,23 +1,33 @@
-﻿using LogTransfer.Server;
-using LogTransfer.Server.Processing;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
-const int PORT = 5000;
-
-var listener = new TcpListener(IPAddress.Any, PORT);
-listener.Start();
-
-Console.WriteLine($"Server listening on port {PORT}");
-
-while (true)
+namespace LogTransfer.Server
 {
-    var client = listener.AcceptTcpClient();
-    Console.WriteLine("Client connected");
-
-    Task.Run(() =>
+    class Program
     {
-        var processor = new LogProcessor();
-        processor.HandleClient(client);
-    });
+        public static long TotalInsertedLines = 0;
+
+        static void Main()
+        {
+            const int PORT = 5000;
+
+            var listener = new TcpListener(IPAddress.Any, PORT);
+            listener.Start();
+
+            Console.WriteLine($"Server listening on port {PORT}");
+
+            while (true)
+            {
+                var client = listener.AcceptTcpClient();
+                Console.WriteLine("Client connected");
+
+                Task.Run(() =>
+                {
+                    var processor = new Processing.LogProcessor();
+                    processor.HandleClient(client);
+                });
+            }
+        }
+    }
 }

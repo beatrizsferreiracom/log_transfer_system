@@ -11,7 +11,7 @@ namespace LogTransfer.Server.Data
         {
             using SqlConnection connection = _dbContext.CreateConnection();
 
-            using SqlBulkCopy bulkCopy = new SqlBulkCopy(connection)
+            using SqlBulkCopy bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, null)
             {
                 DestinationTableName = "AndroidLogs"
             };
