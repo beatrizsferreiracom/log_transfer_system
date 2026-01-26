@@ -1,4 +1,4 @@
-﻿namespace LogTransfer.Core
+﻿namespace LogTransfer.Server.Data
 {
     public class LogEntry
     {

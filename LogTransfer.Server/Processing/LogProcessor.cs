@@ -1,67 +1,93 @@
-﻿using LogTransfer.Core;
-using LogTransfer.Server.Data;
+﻿using LogTransfer.Server.Data;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 
 namespace LogTransfer.Server.Processing
 {
     public class LogProcessor
     {
-        private const int BATCH_SIZE = SocketProtocol.ServerBatchSize;
+        private const int BATCH_SIZE = 50000;
+        private const int BUFFER_SIZE = 1024 * 256;
+
         private readonly LogParser _parser = new();
 
         public void HandleClient(TcpClient client)
         {
-            var logEntries = new List<LogEntry>(BATCH_SIZE);
-
-            int totalInserted = 0;
+            var queue = new BlockingCollection<LogEntry>(BATCH_SIZE * 2);
             var stopwatch = Stopwatch.StartNew();
+
+            int totalLines = 0;
+
+            var bulkTask = Task.Run(() =>
+            {
+                var batch = new List<LogEntry>(BATCH_SIZE);
+
+                foreach (var entry in queue.GetConsumingEnumerable())
+                {
+                    batch.Add(entry);
+                    totalLines++;
+
+                    if (batch.Count >= BATCH_SIZE)
+                    {
+                        LogBulk.BulkInsert(batch);
+                        batch.Clear();
+                    }
+                }
+
+                if (batch.Count > 0)
+                    LogBulk.BulkInsert(batch);
+            });
 
             try
             {
-                using (client)
+                using NetworkStream stream = client.GetStream();
+
+                byte[] buffer = new byte[BUFFER_SIZE];
+                char[] charBuffer = new char[BUFFER_SIZE];
+                var decoder = Encoding.UTF8.GetDecoder();
+                var sb = new StringBuilder();
+
+                int bytesRead;
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    NetworkStream networkStream = client.GetStream();
-                    StreamReader reader = new StreamReader(networkStream);
-                       
-                    string? line;
+                    int charsRead = decoder.GetChars(buffer, 0, bytesRead, charBuffer, 0);
 
-                    while ((line = reader.ReadLine()) != null)
+                    for (int i = 0; i < charsRead; i++)
                     {
-                        if (!_parser.TryParse(line, out LogEntry entry))
-                            continue;
+                        char c = charBuffer[i];
 
-                        logEntries.Add(entry);
-                        totalInserted++;
-
-                        if (logEntries.Count >= BATCH_SIZE)
+                        if (c == '\n')
                         {
-                            LogBulk.BulkInsert(logEntries);
-                            logEntries.Clear();
-                        }
-                    }
+                            var span = sb.ToString().AsSpan();
 
-                    if (logEntries.Count > 0)
-                    {
-                        LogBulk.BulkInsert(logEntries);
-                        logEntries.Clear();
+                            if (_parser.TryParse(span, out LogEntry entry))
+                                queue.Add(entry);
+
+                            sb.Clear();
+                        }
+                        else
+                        {
+                            sb.Append(c);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Client processing error: {ex.Message}");
+                Console.WriteLine($"Client error: {ex.Message}");
             }
             finally
             {
-                stopwatch.Stop();
+                queue.CompleteAdding();
+                bulkTask.Wait();
 
-                double seconds = stopwatch.Elapsed.TotalSeconds;
+                stopwatch.Stop();
 
                 Console.WriteLine("Client processing completed");
                 Console.WriteLine($"Total time           : {stopwatch.Elapsed}");
-                Console.WriteLine($"Total lines inserted : {totalInserted}");
-
+                Console.WriteLine($"Total lines inserted : {totalLines}");
                 Console.WriteLine("Client disconnected.");
             }
         }

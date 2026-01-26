@@ -1,30 +1,15 @@
 ﻿using LogTransfer.Client;
-using LogTransfer.Core;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
-        if(args.Length < 2)
-        {
-            Console.WriteLine("Usage: LogTransfer.Client <logPath> <serverIp> [serverPort]");
-            return;
-        }
+        var sw = System.Diagnostics.Stopwatch.StartNew();
 
-        string logPath = args[0];
-        string serverIp = args[1];
-        int serverPort = args.Length >= 3 
-            ? int.Parse(args[2])
-            : SocketProtocol.DefaultPort;
+        var reader = new LogReader();
+        await reader.ExecuteAsync();
 
-        var transfer = new LogTransferer(
-            logPath,
-            "*.log",
-            serverIp,
-            serverPort);
-
-        await transfer.ExecuteAsync();
-
-        Console.WriteLine("Log transfer completed.");
+        sw.Stop();
+        Console.WriteLine($"Transfer completed in {sw.Elapsed}");
     }
 }

@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogTransfer.Client", "LogTransfer.Client\LogTransfer.Client.csproj", "{BFDBDEBC-9322-4B19-8134-9BDE3E3B6990}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogTransfer.Core", "LogTransfer.Core\LogTransfer.Core.csproj", "{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogTransfer.Server", "LogTransfer.Server\LogTransfer.Server.csproj", "{1289CF9B-C582-4F47-A902-B082F4600FF6}"
 EndProject
 Global
@@ -31,18 +29,6 @@ Global
 		{BFDBDEBC-9322-4B19-8134-9BDE3E3B6990}.Release|x64.Build.0 = Release|Any CPU
 		{BFDBDEBC-9322-4B19-8134-9BDE3E3B6990}.Release|x86.ActiveCfg = Release|Any CPU
 		{BFDBDEBC-9322-4B19-8134-9BDE3E3B6990}.Release|x86.Build.0 = Release|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Debug|x64.Build.0 = Debug|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Debug|x86.Build.0 = Debug|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Release|x64.ActiveCfg = Release|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Release|x64.Build.0 = Release|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Release|x86.ActiveCfg = Release|Any CPU
-		{41720FD8-9BAB-4CD9-8E47-CE9C6222649A}.Release|x86.Build.0 = Release|Any CPU
 		{1289CF9B-C582-4F47-A902-B082F4600FF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1289CF9B-C582-4F47-A902-B082F4600FF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1289CF9B-C582-4F47-A902-B082F4600FF6}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -58,5 +44,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A58C48DC-B59A-408D-BEA0-69341CF990C0}
 	EndGlobalSection
 EndGlobal
